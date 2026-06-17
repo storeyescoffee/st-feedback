@@ -13,6 +13,11 @@ export default {
   placeholderGood: 'What did you enjoy the most?',
   placeholderBad: 'What can we do better?',
   send: 'Send Feedback',
+  questions: {
+    title: 'Rate each aspect',
+    subtitle: 'Help us understand your experience better.',
+    continue: 'Continue',
+  },
   thankyou: {
     heading: 'Thank you so much!',
     body: 'Your opinion truly matters to us and helps us serve you better every day.',

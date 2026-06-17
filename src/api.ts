@@ -4,6 +4,14 @@ const api = axios.create({
   baseURL: 'https://api.storeyes.io',
 })
 
+export interface Question {
+  id: number
+  labelAr: string
+  labelFr: string
+  labelEn: string
+  displayOrder: number
+}
+
 export interface FeedbackProfile {
   id: number
   storeId: number
@@ -11,6 +19,7 @@ export interface FeedbackProfile {
   storeName: string
   logoUrl: string
   googleReviewUrl: string
+  questions?: Question[]
 }
 
 export function getFeedbackProfile(code: string) {
@@ -36,6 +45,7 @@ export function createFeedback(data: CreateFeedbackRequest) {
 export interface CompleteFeedbackRequest {
   comment?: string
   isVisiting?: boolean
+  answers?: { questionId: number; rating: 'GOOD' | 'BAD' }[]
 }
 
 export function completeFeedback(id: string, data: CompleteFeedbackRequest) {

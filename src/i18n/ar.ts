@@ -13,6 +13,11 @@ export default {
   placeholderGood: 'ما الذي اعجبك اكثر؟',
   placeholderBad: 'كيف يمكننا التحسن؟',
   send: 'ارسال الملاحظات',
+  questions: {
+    title: 'قيّم كل جانب',
+    subtitle: 'ساعدنا على فهم تجربتك بشكل أفضل.',
+    continue: 'متابعة',
+  },
   thankyou: {
     heading: 'شكرا جزيلا لك!',
     body: 'رأيك يهمنا حقا ويساعدنا على خدمتك بشكل افضل كل يوم.',

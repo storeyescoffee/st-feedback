@@ -13,6 +13,11 @@ export default {
   placeholderGood: 'Qu\'avez-vous le plus apprecie ?',
   placeholderBad: 'Comment pouvons-nous nous ameliorer ?',
   send: 'Envoyer',
+  questions: {
+    title: 'Évaluez chaque aspect',
+    subtitle: 'Aidez-nous à mieux comprendre votre expérience.',
+    continue: 'Continuer',
+  },
   thankyou: {
     heading: 'Merci infiniment !',
     body: 'Votre avis compte vraiment pour nous et nous aide a mieux vous servir chaque jour.',

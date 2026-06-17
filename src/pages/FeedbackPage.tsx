@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
-import { getFeedbackProfile, createFeedback, completeFeedback, isMobileDevice, type FeedbackProfile } from '../api'
+import {
+  getFeedbackProfile, createFeedback, completeFeedback, isMobileDevice,
+  type FeedbackProfile, type Question,
+} from '../api'
 import './FeedbackPage.css'
+
+type Step = 'choice' | 'questions' | 'comment' | 'done'
 
 export default function FeedbackPage() {
   const { code } = useParams<{ code: string }>()
@@ -14,7 +19,8 @@ export default function FeedbackPage() {
   const [feedback, setFeedback] = useState<'good' | 'bad' | null>(null)
   const [feedbackId, setFeedbackId] = useState<string | null>(null)
   const [comment, setComment] = useState('')
-  const [step, setStep] = useState<'choice' | 'comment' | 'done'>('choice')
+  const [step, setStep] = useState<Step>('choice')
+  const [questionAnswers, setQuestionAnswers] = useState<Record<number, 'GOOD' | 'BAD'>>({})
 
   useEffect(() => {
     if (!code) return
@@ -26,7 +32,6 @@ export default function FeedbackPage() {
 
   function handleChoice(value: 'good' | 'bad') {
     setFeedback(value)
-    setStep('comment')
 
     if (!code) return
     createFeedback({
@@ -36,12 +41,39 @@ export default function FeedbackPage() {
       isMobile: isMobileDevice(),
     })
       .then((res) => setFeedbackId(res.data.id))
-      .catch(() => {/* silently fail — feedback still shown locally */})
+      .catch(() => {})
+
+    const hasQuestions = (profile?.questions?.length ?? 0) > 0
+    setStep(hasQuestions ? 'questions' : 'comment')
+  }
+
+  function toggleAnswer(questionId: number, rating: 'GOOD' | 'BAD') {
+    setQuestionAnswers(prev => {
+      if (prev[questionId] === rating) {
+        const next = { ...prev }
+        delete next[questionId]
+        return next
+      }
+      return { ...prev, [questionId]: rating }
+    })
+  }
+
+  function handleContinueQuestions() {
+    setStep('comment')
   }
 
   function handleSend() {
-    if (feedbackId && comment.trim()) {
-      completeFeedback(feedbackId, { comment: comment.trim() }).catch(() => {})
+    if (feedbackId) {
+      const answers = Object.entries(questionAnswers).map(([qId, rating]) => ({
+        questionId: Number(qId),
+        rating: rating as 'GOOD' | 'BAD',
+      }))
+      if (comment.trim() || answers.length > 0) {
+        completeFeedback(feedbackId, {
+          comment: comment.trim() || undefined,
+          answers: answers.length > 0 ? answers : undefined,
+        }).catch(() => {})
+      }
     }
     setStep('done')
   }
@@ -52,6 +84,14 @@ export default function FeedbackPage() {
     }
   }
 
+  function getQuestionLabel(q: Question): string {
+    const lang = i18n.language
+    if (lang === 'ar') return q.labelAr
+    if (lang === 'fr') return q.labelFr
+    return q.labelEn
+  }
+
+  // ── Loading ───────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="fb-page">
@@ -63,6 +103,7 @@ export default function FeedbackPage() {
     )
   }
 
+  // ── Error ─────────────────────────────────────────────────────
   if (error || !profile) {
     return (
       <div className="fb-page">
@@ -75,6 +116,7 @@ export default function FeedbackPage() {
     )
   }
 
+  // ── Done ──────────────────────────────────────────────────────
   if (step === 'done') {
     return (
       <div className="fb-page">
@@ -113,6 +155,52 @@ export default function FeedbackPage() {
     )
   }
 
+  // ── Questions step ────────────────────────────────────────────
+  if (step === 'questions') {
+    const questions = profile.questions ?? []
+    return (
+      <div className="fb-page">
+        <div className="fb-card fb-card--wide">
+          <div className="fb-header">
+            <img src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
+            <h2 className="fb-store-name">{profile.storeName}</h2>
+            <h1 className="fb-title">{t('questions.title')}</h1>
+            <p className="fb-subtitle">{t('questions.subtitle')}</p>
+          </div>
+
+          <div className="fb-questions-list">
+            {questions.map(q => (
+              <div key={q.id} className="fb-question-item">
+                <p className="fb-question-label">{getQuestionLabel(q)}</p>
+                <div className="fb-question-btns">
+                  <button
+                    className={`fb-question-btn fb-question-btn--good${questionAnswers[q.id] === 'GOOD' ? ' fb-question-btn--active-good' : ''}`}
+                    onClick={() => toggleAnswer(q.id, 'GOOD')}
+                    aria-pressed={questionAnswers[q.id] === 'GOOD'}
+                  >
+                    <span className="fb-question-emoji">👍</span>
+                  </button>
+                  <button
+                    className={`fb-question-btn fb-question-btn--bad${questionAnswers[q.id] === 'BAD' ? ' fb-question-btn--active-bad' : ''}`}
+                    onClick={() => toggleAnswer(q.id, 'BAD')}
+                    aria-pressed={questionAnswers[q.id] === 'BAD'}
+                  >
+                    <span className="fb-question-emoji">👎</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button className="fb-send" onClick={handleContinueQuestions}>
+            {t('questions.continue')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Comment step ──────────────────────────────────────────────
   if (step === 'comment') {
     return (
       <div className="fb-page">
@@ -145,6 +233,7 @@ export default function FeedbackPage() {
     )
   }
 
+  // ── Choice step (default) ─────────────────────────────────────
   return (
     <div className="fb-page">
       <div className="fb-card">
