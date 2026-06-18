@@ -142,6 +142,17 @@
 }
 
 /* Textarea */
+.fb-comment-optional-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 6px;
+  text-align: left;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .fb-comment-wrap {
   width: 100%;
   box-sizing: border-box;

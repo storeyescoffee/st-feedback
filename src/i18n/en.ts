@@ -12,6 +12,7 @@ export default {
   commentTitleBad: 'We\'re sorry to hear that.',
   placeholderGood: 'What did you enjoy the most?',
   placeholderBad: 'What can we do better?',
+  commentOptional: 'Leave a comment (optional)',
   send: 'Send Feedback',
   questions: {
     title: 'Rate each aspect',

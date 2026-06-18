@@ -12,6 +12,7 @@ export default {
   commentTitleBad: 'Nous sommes desoles.',
   placeholderGood: 'Qu\'avez-vous le plus apprecie ?',
   placeholderBad: 'Comment pouvons-nous nous ameliorer ?',
+  commentOptional: 'Ajouter un commentaire (optionnel)',
   send: 'Envoyer',
   questions: {
     title: 'Évaluez chaque aspect',
