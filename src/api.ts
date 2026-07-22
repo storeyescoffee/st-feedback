@@ -20,6 +20,7 @@ export interface FeedbackProfile {
   logoUrl: string
   googleReviewUrl: string
   questions?: Question[]
+  multipleQuestionsEnabled?: boolean
 }
 
 export function getFeedbackProfile(code: string) {

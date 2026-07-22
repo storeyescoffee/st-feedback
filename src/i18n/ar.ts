@@ -12,6 +12,7 @@ export default {
   commentTitleBad: 'نأسف لسماع ذلك.',
   placeholderGood: 'ما الذي اعجبك اكثر؟',
   placeholderBad: 'كيف يمكننا التحسن؟',
+  commentOptional: 'أضف تعليقاً (اختياري)',
   send: 'ارسال الملاحظات',
   questions: {
     title: 'قيّم كل جانب',

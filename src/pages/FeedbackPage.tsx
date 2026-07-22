@@ -8,7 +8,7 @@ import {
 import StoreLogo from '../components/StoreLogo'
 import './FeedbackPage.css'
 
-type Step = 'choice' | 'questions' | 'comment' | 'done'
+type Step = 'choice' | 'questions' | 'done'
 
 export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) {
   const { t } = useTranslation()
@@ -30,8 +30,7 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
       .then((res) => setFeedbackId(res.data.id))
       .catch(() => {})
 
-    const hasQuestions = (profile?.questions?.length ?? 0) > 0
-    setStep(hasQuestions ? 'questions' : 'comment')
+    setStep('questions')
   }
 
   function toggleAnswer(questionId: number, rating: 'GOOD' | 'BAD') {
@@ -43,10 +42,6 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
       }
       return { ...prev, [questionId]: rating }
     })
-  }
-
-  function handleContinueQuestions() {
-    setStep('comment')
   }
 
   function handleSend() {
@@ -117,73 +112,60 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
     )
   }
 
-  // ── Questions step ────────────────────────────────────────────
+  // ── Questions + Comment step (combined) ──────────────────────
   if (step === 'questions') {
     const questions = profile.questions ?? []
+    const hasQuestions = questions.length > 0
     return (
       <div className="fb-page">
-        <div className="fb-card fb-card--wide">
+        <div className={`fb-card${hasQuestions ? ' fb-card--wide' : ''}`}>
           <div className="fb-header">
             <StoreLogo src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
             <h2 className="fb-store-name">{profile.storeName}</h2>
-            <h1 className="fb-title">{t('questions.title')}</h1>
-            <p className="fb-subtitle">{t('questions.subtitle')}</p>
-          </div>
-
-          <div className="fb-questions-list">
-            {questions.map(q => (
-              <div key={q.id} className="fb-question-item">
-                <p className="fb-question-label">{getQuestionLabel(q)}</p>
-                <div className="fb-question-btns">
-                  <button
-                    className={`fb-question-btn fb-question-btn--good${questionAnswers[q.id] === 'GOOD' ? ' fb-question-btn--active-good' : ''}`}
-                    onClick={() => toggleAnswer(q.id, 'GOOD')}
-                    aria-pressed={questionAnswers[q.id] === 'GOOD'}
-                  >
-                    <span className="fb-question-emoji">👍</span>
-                  </button>
-                  <button
-                    className={`fb-question-btn fb-question-btn--bad${questionAnswers[q.id] === 'BAD' ? ' fb-question-btn--active-bad' : ''}`}
-                    onClick={() => toggleAnswer(q.id, 'BAD')}
-                    aria-pressed={questionAnswers[q.id] === 'BAD'}
-                  >
-                    <span className="fb-question-emoji">👎</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button className="fb-send" onClick={handleContinueQuestions}>
-            {t('questions.continue')}
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // ── Comment step ──────────────────────────────────────────────
-  if (step === 'comment') {
-    return (
-      <div className="fb-page">
-        <div className="fb-card">
-          <div className="fb-header">
-            <StoreLogo src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
-            <h2 className="fb-store-name">{profile.storeName}</h2>
-            <h1 className="fb-title">{feedback === 'good' ? t('commentTitleGood') : t('commentTitleBad')}</h1>
+            <h1 className="fb-title">
+              {hasQuestions ? t('questions.title') : (feedback === 'good' ? t('commentTitleGood') : t('commentTitleBad'))}
+            </h1>
             <p className="fb-subtitle">
-              {feedback === 'good' ? '😊' : '😞'} {feedback === 'good' ? t('good') : t('bad')}
+              {hasQuestions
+                ? t('questions.subtitle')
+                : `${feedback === 'good' ? '😊' : '😞'} ${feedback === 'good' ? t('good') : t('bad')}`}
             </p>
           </div>
 
+          {hasQuestions && (
+            <div className="fb-questions-list">
+              {questions.map(q => (
+                <div key={q.id} className="fb-question-item">
+                  <p className="fb-question-label">{getQuestionLabel(q)}</p>
+                  <div className="fb-question-btns">
+                    <button
+                      className={`fb-question-btn fb-question-btn--good${questionAnswers[q.id] === 'GOOD' ? ' fb-question-btn--active-good' : ''}`}
+                      onClick={() => toggleAnswer(q.id, 'GOOD')}
+                      aria-pressed={questionAnswers[q.id] === 'GOOD'}
+                    >
+                      <span className="fb-question-emoji">👍</span>
+                    </button>
+                    <button
+                      className={`fb-question-btn fb-question-btn--bad${questionAnswers[q.id] === 'BAD' ? ' fb-question-btn--active-bad' : ''}`}
+                      onClick={() => toggleAnswer(q.id, 'BAD')}
+                      aria-pressed={questionAnswers[q.id] === 'BAD'}
+                    >
+                      <span className="fb-question-emoji">👎</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="fb-comment-wrap">
+            <label className="fb-comment-optional-label">{t('commentOptional')}</label>
             <textarea
               className="fb-comment"
               placeholder={feedback === 'good' ? t('placeholderGood') : t('placeholderBad')}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              rows={4}
-              autoFocus
+              rows={hasQuestions ? 3 : 4}
             />
           </div>
 
