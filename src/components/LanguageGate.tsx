@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { type Lang, SUPPORTED, persistLanguage, resolveLanguage } from '../i18n'
+import StoreLogo from './StoreLogo'
 import './LanguageGate.css'
 
 const LANGS: { code: Lang; label: string; tag: string }[] = [
@@ -20,7 +21,15 @@ function getInitial(): Lang | null {
   return null
 }
 
-export default function LanguageGate({ children }: { children: React.ReactNode }) {
+export default function LanguageGate({
+  children,
+  logoUrl,
+  storeName,
+}: {
+  children: React.ReactNode
+  logoUrl: string
+  storeName: string
+}) {
   const [chosen, setChosen] = useState<Lang | null>(getInitial)
   const { i18n: i18next } = useTranslation()
 
@@ -37,7 +46,7 @@ export default function LanguageGate({ children }: { children: React.ReactNode }
   return (
     <div className="lg-page">
       <div className="lg-card">
-        <img src="/lecomptoir.png" alt="Store logo" className="lg-logo" />
+        <StoreLogo src={logoUrl} alt={storeName} className="lg-logo" />
         <p className="lg-prompt">Choose your language</p>
         <p className="lg-prompt-sub">Choisissez votre langue</p>
         <p className="lg-prompt-sub lg-prompt-ar">اختر لغتك</p>

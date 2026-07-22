@@ -1,41 +1,28 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import {
-  getFeedbackProfile, createFeedback, completeFeedback, isMobileDevice,
+  createFeedback, completeFeedback, isMobileDevice,
   type FeedbackProfile, type Question,
 } from '../api'
+import StoreLogo from '../components/StoreLogo'
 import './FeedbackPage.css'
 
 type Step = 'choice' | 'questions' | 'comment' | 'done'
 
-export default function FeedbackPage() {
-  const { code } = useParams<{ code: string }>()
+export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) {
   const { t } = useTranslation()
-  const [profile, setProfile] = useState<FeedbackProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
   const [feedback, setFeedback] = useState<'good' | 'bad' | null>(null)
   const [feedbackId, setFeedbackId] = useState<string | null>(null)
   const [comment, setComment] = useState('')
   const [step, setStep] = useState<Step>('choice')
   const [questionAnswers, setQuestionAnswers] = useState<Record<number, 'GOOD' | 'BAD'>>({})
 
-  useEffect(() => {
-    if (!code) return
-    getFeedbackProfile(code)
-      .then((res) => setProfile(res.data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false))
-  }, [code])
-
   function handleChoice(value: 'good' | 'bad') {
     setFeedback(value)
 
-    if (!code) return
     createFeedback({
-      feedbackProfileCode: code,
+      feedbackProfileCode: profile.code,
       rating: value === 'good' ? 'GOOD' : 'BAD',
       language: i18n.language.toUpperCase(),
       isMobile: isMobileDevice(),
@@ -91,31 +78,6 @@ export default function FeedbackPage() {
     return q.labelEn
   }
 
-  // ── Loading ───────────────────────────────────────────────────
-  if (loading) {
-    return (
-      <div className="fb-page">
-        <div className="fb-loading-card">
-          <div className="fb-spinner" />
-          <p>{t('loading')}</p>
-        </div>
-      </div>
-    )
-  }
-
-  // ── Error ─────────────────────────────────────────────────────
-  if (error || !profile) {
-    return (
-      <div className="fb-page">
-        <div className="fb-error-card">
-          <div className="fb-error-icon">😕</div>
-          <h1>{t('error.heading')}</h1>
-          <p>{t('error.body')}</p>
-        </div>
-      </div>
-    )
-  }
-
   // ── Done ──────────────────────────────────────────────────────
   if (step === 'done') {
     return (
@@ -162,7 +124,7 @@ export default function FeedbackPage() {
       <div className="fb-page">
         <div className="fb-card fb-card--wide">
           <div className="fb-header">
-            <img src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
+            <StoreLogo src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
             <h2 className="fb-store-name">{profile.storeName}</h2>
             <h1 className="fb-title">{t('questions.title')}</h1>
             <p className="fb-subtitle">{t('questions.subtitle')}</p>
@@ -206,7 +168,7 @@ export default function FeedbackPage() {
       <div className="fb-page">
         <div className="fb-card">
           <div className="fb-header">
-            <img src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
+            <StoreLogo src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
             <h2 className="fb-store-name">{profile.storeName}</h2>
             <h1 className="fb-title">{feedback === 'good' ? t('commentTitleGood') : t('commentTitleBad')}</h1>
             <p className="fb-subtitle">
@@ -238,7 +200,7 @@ export default function FeedbackPage() {
     <div className="fb-page">
       <div className="fb-card">
         <div className="fb-header">
-          <img src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
+          <StoreLogo src={profile.logoUrl} alt={profile.storeName} className="fb-logo" />
           <h2 className="fb-store-name">{profile.storeName}</h2>
           <h1 className="fb-title">{t('title')}</h1>
           <p className="fb-subtitle">{t('subtitle')}</p>
