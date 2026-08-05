@@ -61,4 +61,8 @@ export function isMobileDevice(): boolean {
   )
 }
 
+export function isIOSOrMac(): boolean {
+  return /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent)
+}
+
 export default api

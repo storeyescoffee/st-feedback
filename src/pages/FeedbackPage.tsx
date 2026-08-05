@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import {
-  createFeedback, completeFeedback, isMobileDevice,
+  createFeedback, completeFeedback, isMobileDevice, isIOSOrMac,
   type FeedbackProfile, type Question,
 } from '../api'
 import StoreLogo from '../components/StoreLogo'
@@ -27,8 +27,23 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
       language: i18n.language.toUpperCase(),
       isMobile: isMobileDevice(),
     })
-      .then((res) => setFeedbackId(res.data.id))
+      .then((res) => {
+        setFeedbackId(res.data.id)
+        if (value === 'good' && profile.googleReviewUrl && !isIOSOrMac()) {
+          completeFeedback(res.data.id, { isVisiting: true }).catch(() => {})
+        }
+      })
       .catch(() => {})
+
+    // TODO: revisit — good feedback skips questions/comment entirely (redirects on non-iOS, shows thank-you on iOS/Mac)
+    if (value === 'good') {
+      if (profile.googleReviewUrl && !isIOSOrMac()) {
+        window.location.href = profile.googleReviewUrl
+      } else {
+        setStep('done')
+      }
+      return
+    }
 
     setStep('questions')
   }
