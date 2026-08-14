@@ -13,6 +13,7 @@ export default {
   placeholderGood: 'What did you enjoy the most?',
   placeholderBad: 'What can we do better?',
   commentOptional: 'Leave a comment (optional)',
+  commentRequired: 'Leave a comment (required)',
   send: 'Send Feedback',
   questions: {
     title: 'Rate each aspect',

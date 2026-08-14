@@ -21,22 +21,22 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
   function handleChoice(value: 'good' | 'bad') {
     setFeedback(value)
 
-    createFeedback({
-      feedbackProfileCode: profile.code,
-      rating: value === 'good' ? 'GOOD' : 'BAD',
-      language: i18n.language.toUpperCase(),
-      isMobile: isMobileDevice(),
-    })
-      .then((res) => {
-        setFeedbackId(res.data.id)
-        if (value === 'good' && profile.googleReviewUrl && !isIOSOrMac()) {
-          completeFeedback(res.data.id, { isVisiting: true }).catch(() => {})
-        }
-      })
-      .catch(() => {})
-
     // TODO: revisit — good feedback skips questions/comment entirely (redirects on non-iOS, shows thank-you on iOS/Mac)
     if (value === 'good') {
+      createFeedback({
+        feedbackProfileCode: profile.code,
+        rating: 'GOOD',
+        language: i18n.language.toUpperCase(),
+        isMobile: isMobileDevice(),
+      })
+        .then((res) => {
+          setFeedbackId(res.data.id)
+          if (profile.googleReviewUrl && !isIOSOrMac()) {
+            completeFeedback(res.data.id, { isVisiting: true }).catch(() => {})
+          }
+        })
+        .catch(() => {})
+
       if (profile.googleReviewUrl && !isIOSOrMac()) {
         window.location.href = profile.googleReviewUrl
       } else {
@@ -45,6 +45,7 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
       return
     }
 
+    // Bad feedback is only persisted once the (required) comment is sent — see handleSend.
     setStep('questions')
   }
 
@@ -60,18 +61,37 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
   }
 
   function handleSend() {
-    if (feedbackId) {
-      const answers = Object.entries(questionAnswers).map(([qId, rating]) => ({
-        questionId: Number(qId),
-        rating: rating as 'GOOD' | 'BAD',
-      }))
-      if (comment.trim() || answers.length > 0) {
-        completeFeedback(feedbackId, {
-          comment: comment.trim() || undefined,
-          answers: answers.length > 0 ? answers : undefined,
-        }).catch(() => {})
-      }
+    const answers = Object.entries(questionAnswers).map(([qId, rating]) => ({
+      questionId: Number(qId),
+      rating: rating as 'GOOD' | 'BAD',
+    }))
+    const trimmedComment = comment.trim()
+
+    if (feedback === 'bad') {
+      // Bad feedback requires a comment — nothing is saved without one.
+      if (!trimmedComment) return
+
+      createFeedback({
+        feedbackProfileCode: profile.code,
+        rating: 'BAD',
+        language: i18n.language.toUpperCase(),
+        isMobile: isMobileDevice(),
+      })
+        .then((res) => {
+          setFeedbackId(res.data.id)
+          completeFeedback(res.data.id, {
+            comment: trimmedComment,
+            answers: answers.length > 0 ? answers : undefined,
+          }).catch(() => {})
+        })
+        .catch(() => {})
+    } else if (feedbackId && (trimmedComment || answers.length > 0)) {
+      completeFeedback(feedbackId, {
+        comment: trimmedComment || undefined,
+        answers: answers.length > 0 ? answers : undefined,
+      }).catch(() => {})
     }
+
     setStep('done')
   }
 
@@ -174,17 +194,24 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
           )}
 
           <div className="fb-comment-wrap">
-            <label className="fb-comment-optional-label">{t('commentOptional')}</label>
+            <label className="fb-comment-optional-label">
+              {feedback === 'bad' ? t('commentRequired') : t('commentOptional')}
+            </label>
             <textarea
               className="fb-comment"
               placeholder={feedback === 'good' ? t('placeholderGood') : t('placeholderBad')}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={hasQuestions ? 3 : 4}
+              required={feedback === 'bad'}
             />
           </div>
 
-          <button className="fb-send" onClick={handleSend}>
+          <button
+            className="fb-send"
+            onClick={handleSend}
+            disabled={feedback === 'bad' && comment.trim().length === 0}
+          >
             {t('send')}
           </button>
         </div>

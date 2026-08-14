@@ -13,6 +13,7 @@ export default {
   placeholderGood: 'Qu\'avez-vous le plus apprecie ?',
   placeholderBad: 'Comment pouvons-nous nous ameliorer ?',
   commentOptional: 'Ajouter un commentaire (optionnel)',
+  commentRequired: 'Ajouter un commentaire (requis)',
   send: 'Envoyer',
   questions: {
     title: 'Évaluez chaque aspect',

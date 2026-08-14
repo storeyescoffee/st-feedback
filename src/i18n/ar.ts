@@ -13,6 +13,7 @@ export default {
   placeholderGood: 'ما الذي اعجبك اكثر؟',
   placeholderBad: 'كيف يمكننا التحسن؟',
   commentOptional: 'أضف تعليقاً (اختياري)',
+  commentRequired: 'أضف تعليقاً (مطلوب)',
   send: 'ارسال الملاحظات',
   questions: {
     title: 'قيّم كل جانب',
