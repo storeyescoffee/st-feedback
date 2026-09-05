@@ -182,6 +182,59 @@
   color: #94a3b8;
 }
 
+/* Contact field (bad feedback only) */
+.fb-contact-wrap {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fb-contact-field {
+  position: relative;
+  width: 100%;
+}
+
+.fb-contact-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--st-cyan);
+  pointer-events: none;
+}
+
+.fb-contact-input {
+  width: 100%;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px 12px 42px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #0a1f3a;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.fb-contact-input:focus {
+  border-color: var(--st-cyan);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+}
+
+.fb-contact-input::placeholder {
+  color: #94a3b8;
+}
+
+.fb-contact-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 6px 2px 0;
+  line-height: 1.4;
+}
+
 /* Send button */
 .fb-send {
   width: 100%;

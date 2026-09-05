@@ -14,6 +14,9 @@ export default {
   placeholderBad: 'Comment pouvons-nous nous ameliorer ?',
   commentOptional: 'Ajouter un commentaire (optionnel)',
   commentRequired: 'Ajouter un commentaire (requis)',
+  contactLabel: 'Votre téléphone ou email (optionnel)',
+  contactPlaceholder: '+212 6 12 34 56 78 ou vous@email.com',
+  contactHint: 'Utilisé uniquement pour vous recontacter à propos de votre avis.',
   send: 'Envoyer',
   questions: {
     title: 'Évaluez chaque aspect',

@@ -45,6 +45,7 @@ export function createFeedback(data: CreateFeedbackRequest) {
 
 export interface CompleteFeedbackRequest {
   comment?: string
+  contact?: string
   isVisiting?: boolean
   answers?: { questionId: number; rating: 'GOOD' | 'BAD' }[]
 }

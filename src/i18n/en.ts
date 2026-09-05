@@ -14,6 +14,9 @@ export default {
   placeholderBad: 'What can we do better?',
   commentOptional: 'Leave a comment (optional)',
   commentRequired: 'Leave a comment (required)',
+  contactLabel: 'Your phone or email (optional)',
+  contactPlaceholder: '+212 6 12 34 56 78 or you@email.com',
+  contactHint: "We'll only use this to follow up on your feedback.",
   send: 'Send Feedback',
   questions: {
     title: 'Rate each aspect',

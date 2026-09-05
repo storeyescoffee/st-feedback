@@ -14,6 +14,9 @@ export default {
   placeholderBad: 'كيف يمكننا التحسن؟',
   commentOptional: 'أضف تعليقاً (اختياري)',
   commentRequired: 'أضف تعليقاً (مطلوب)',
+  contactLabel: 'هاتفك أو بريدك الإلكتروني (اختياري)',
+  contactPlaceholder: 'مثال: 0612345678 أو you@email.com',
+  contactHint: 'سنستخدم هذا فقط للتواصل معك بخصوص ملاحظتك.',
   send: 'ارسال الملاحظات',
   questions: {
     title: 'قيّم كل جانب',

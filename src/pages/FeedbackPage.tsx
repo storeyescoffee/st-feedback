@@ -15,6 +15,7 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
   const [feedback, setFeedback] = useState<'good' | 'bad' | null>(null)
   const [feedbackId, setFeedbackId] = useState<string | null>(null)
   const [comment, setComment] = useState('')
+  const [contact, setContact] = useState('')
   const [step, setStep] = useState<Step>('choice')
   const [questionAnswers, setQuestionAnswers] = useState<Record<number, 'GOOD' | 'BAD'>>({})
 
@@ -66,6 +67,7 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
       rating: rating as 'GOOD' | 'BAD',
     }))
     const trimmedComment = comment.trim()
+    const trimmedContact = contact.trim()
 
     if (feedback === 'bad') {
       // Bad feedback requires a comment — nothing is saved without one.
@@ -81,6 +83,7 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
           setFeedbackId(res.data.id)
           completeFeedback(res.data.id, {
             comment: trimmedComment,
+            contact: trimmedContact || undefined,
             answers: answers.length > 0 ? answers : undefined,
           }).catch(() => {})
         })
@@ -206,6 +209,25 @@ export default function FeedbackPage({ profile }: { profile: FeedbackProfile }) 
               required={feedback === 'bad'}
             />
           </div>
+
+          {feedback === 'bad' && (
+            <div className="fb-contact-wrap">
+              <label className="fb-comment-optional-label">{t('contactLabel')}</label>
+              <div className="fb-contact-field">
+                <svg className="fb-contact-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 5.5C3 4.11929 4.11929 3 5.5 3H8.5L10.5 8L8 9.5C9 12 12 15 14.5 16L16 13.5L21 15.5V18.5C21 19.8807 19.8807 21 18.5 21C9.93959 21 3 14.0604 3 5.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <input
+                  type="text"
+                  className="fb-contact-input"
+                  placeholder={t('contactPlaceholder')}
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                />
+              </div>
+              <p className="fb-contact-hint">{t('contactHint')}</p>
+            </div>
+          )}
 
           <button
             className="fb-send"
